@@ -9,13 +9,6 @@ A calm macOS menu bar app for your Claude usage. One glance tells you how much o
 
 > Unofficial. Not affiliated with or endorsed by Anthropic. "Claude" is a trademark of Anthropic, used here only to say what the app works with.
 
-<p align="center">
-  <a href="docs/pace-launch.mp4"><img src="docs/demo.gif" width="720" alt="Pace opening from the menu bar, a row opening to show its detail, and the forecast turning orange as usage climbs"></a>
-</p>
-
-
-<p align="center"><a href="docs/pace-launch.mp4">Watch the full video, with sound (27 seconds)</a></p>
-
 ## Quick start
 
 You need macOS 14 or newer and the Xcode Command Line Tools (`xcode-select --install`).
