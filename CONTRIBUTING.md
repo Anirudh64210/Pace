@@ -37,12 +37,12 @@ Xcode works too: `open Package.swift`.
 | `Sources/Pace/App` | Entry point, `StatusItemController` (menu bar item, panel, right-click menu) and `AppState` (polling, sync status, events). |
 | `Sources/Pace/System` | Notifications, settings, the status line installer, launch cleanup. |
 | `scripts/pace-statusline.sh` | The Claude Code status line script. It is also embedded in `StatusLineScript.swift`; a test keeps the two identical. |
-| `docs/` | `DESIGN.md` (how Pace looks and behaves, and why) and the README screenshots. |
+| `docs/` | `DESIGN.md` (how Pace looks and behaves, and why) and the demo video. |
 
 ## Sending a change
 
 1. `swift test` passes.
-2. `make demo` still matches `docs/DESIGN.md`. If you changed the look, run `make screenshots`.
+2. `make demo` still matches `docs/DESIGN.md`.
 3. If you touched a data source, say in the PR which live response shape you tested against, with values replaced.
 
 Open an issue first for anything bigger than a screen.

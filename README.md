@@ -5,10 +5,10 @@ A calm macOS menu bar app for your Claude usage. One glance tells you how much o
 > Unofficial. Not affiliated with or endorsed by Anthropic. "Claude" is a trademark of Anthropic, used here only to say what the app works with.
 
 <p align="center">
-  <img src="docs/screenshots/normal.png" width="280" alt="Pace: 48% of the session used, 2h 15m until it resets, on pace; week 41% used, Fable weekly 26%, credits, and usage by product">
-  <img src="docs/screenshots/expanded-all.png" width="280" alt="Every row open: each shows a bar with an even-pace tick, the day of the week, and a daily budget">
-  <img src="docs/screenshots/onboarding.png" width="280" alt="First run: one button to connect Pace to Claude Code">
+  <a href="docs/pace-launch.mp4"><img src="docs/demo.gif" width="720" alt="Pace opening from the menu bar, a row opening to show its detail, and the forecast turning orange as usage climbs"></a>
 </p>
+
+<p align="center"><a href="docs/pace-launch.mp4">Watch the full video, with sound (27 seconds)</a></p>
 
 ## Quick start
 
@@ -38,8 +38,6 @@ That is the only time you need the terminal. Pace starts by itself when you log 
 **Click a row for the detail behind it.** It opens in place with a bar showing where an even pace would be, which day of the week it is, and how much a day keeps you under the limit. Open as many rows as you like; they stay open next time.
 
 Time is always shown in hours and minutes, never seconds.
-
-<p align="center"><img src="docs/screenshots/pill.png" width="420" alt="A pill under the menu bar: Session limit, back at 3:32 AM"></p>
 
 **When something changes,** a small pill drops from under the menu bar icon for a few seconds, like the Focus pill: your session hits its limit or comes back, the week is reached or resets, or you are running fast enough to run out early. Each change shows once. The pill never takes focus or blocks a click. System notifications are available in Settings as an extra.
 
@@ -123,7 +121,6 @@ make demo          # fake data that cycles through every state
 swift test         # unit, layout, security, installer and fuzz tests
 make run           # run from the terminal
 make app           # build build/Pace.app
-make screenshots   # re-render docs/screenshots
 ```
 
 No third-party dependencies. `Package.swift` also opens in Xcode.
@@ -136,7 +133,7 @@ No third-party dependencies. `Package.swift` also opens in Xcode.
 | `Sources/Pace/UI` | SwiftUI views, the status pill. `Theme.swift` holds every color and size |
 | `Sources/Pace/System` | Settings, notifications, status line installer, shortcut, launch cleanup |
 | `scripts/` | The status line script and the icon generator |
-| `docs/` | Design notes and the README screenshots |
+| `docs/` | Design notes and the demo video |
 
 Read [CONTRIBUTING.md](CONTRIBUTING.md) before sending a change.
 

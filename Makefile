@@ -7,7 +7,6 @@
 #   make test       unit tests
 #   make app        build build/Pace.app (release, ad hoc signed)
 #   make uninstall  quit Pace and remove /Applications/Pace.app
-#   make screenshots  re-render docs/screenshots from demo data
 #   make icon       draw Support/Pace.icns from the apple artwork (make app does this)
 #   make clean
 
@@ -15,7 +14,7 @@ APP      = build/Pace.app
 BIN      = .build/release/Pace
 CONTENTS = $(APP)/Contents
 
-.PHONY: run demo check test app install uninstall screenshots icon clean open
+.PHONY: run demo check test app install uninstall icon clean open
 
 run:
 	swift run Pace
@@ -28,11 +27,6 @@ check:
 
 test:
 	swift test
-
-screenshots:
-	swift build
-	.build/debug/Pace --snapshot build/snapshots
-	for n in normal expanded-all onboarding pill; do cp build/snapshots/$$n.png docs/screenshots/; done
 
 $(BIN): $(shell find Sources -name '*.swift') Package.swift
 	swift build -c release
