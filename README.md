@@ -3,9 +3,6 @@
 https://github.com/user-attachments/assets/9a2a9fe9-4bbc-4023-9757-e3f4c142a6ed
 
 
-
-https://github.com/user-attachments/assets/225a1c83-3f37-4cf1-a7b1-48641435cecf
-
 # Pace
 
 A calm macOS menu bar app for your Claude usage. One glance tells you how much of your session and week you have used, when it resets, and whether you are on pace.
@@ -15,13 +12,6 @@ A calm macOS menu bar app for your Claude usage. One glance tells you how much o
 <p align="center">
   <a href="docs/pace-launch.mp4"><img src="docs/demo.gif" width="720" alt="Pace opening from the menu bar, a row opening to show its detail, and the forecast turning orange as usage climbs"></a>
 </p>
-
-
-https://github.com/user-attachments/assets/d666914c-d2e4-4edd-8d31-6092ad814c2f
-
-
-
-https://github.com/user-attachments/assets/9ca2224d-1423-4bce-a0fb-934e063a7fa5
 
 
 <p align="center"><a href="docs/pace-launch.mp4">Watch the full video, with sound (27 seconds)</a></p>
