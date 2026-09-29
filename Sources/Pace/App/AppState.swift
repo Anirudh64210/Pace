@@ -77,9 +77,13 @@ final class AppState: ObservableObject {
     private var cancellables = Set<AnyCancellable>()
     private var cachedText: (key: TextKey, value: PanelText?)?
 
-    init(settings: Settings, demo: Bool = false, autoPoll: Bool = true, provider: UsageProvider? = nil) {
+    /// Tests pass `providerFactory` so that switching sources never touches the
+    /// real Keychain or the network.
+    init(settings: Settings, demo: Bool = false, autoPoll: Bool = true, provider: UsageProvider? = nil,
+         providerFactory: ((UsageSource) -> UsageProvider)? = nil) {
         self.settings = settings
         self.isDemo = demo
+        self.providerFactory = providerFactory
         self.provider = provider ?? DemoProvider()
         if provider == nil { self.provider = makeProvider(demo ? .demo : settings.source) }
 
@@ -118,7 +122,10 @@ final class AppState: ObservableObject {
         Task { await refreshTokens() }
     }
 
+    private let providerFactory: ((UsageSource) -> UsageProvider)?
+
     private func makeProvider(_ source: UsageSource) -> UsageProvider {
+        if let providerFactory { return providerFactory(source) }
         switch source {
         case .statusLine: return StatusLineProvider()
         case .oauth: return oauthProvider

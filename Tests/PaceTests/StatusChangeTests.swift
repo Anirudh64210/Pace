@@ -24,25 +24,66 @@ final class PanelPositionTests: XCTestCase {
     }
 }
 
+/// A provider that does not answer until the test lets it.
+final class GatedProvider: UsageProvider, @unchecked Sendable {
+    let kind: UsageSource
+    private var waiting: [CheckedContinuation<UsageSnapshot, Error>] = []
+    private let lock = NSLock()
+    private(set) var calls = 0
+    init(kind: UsageSource) { self.kind = kind }
+
+    func fetch() async throws -> UsageSnapshot {
+        try await withCheckedThrowingContinuation { c in
+            lock.lock(); calls += 1; waiting.append(c); lock.unlock()
+        }
+    }
+
+    var isWaiting: Bool { lock.lock(); defer { lock.unlock() }; return !waiting.isEmpty }
+
+    func answer(_ result: Result<UsageSnapshot, Error>) {
+        lock.lock(); let all = waiting; waiting.removeAll(); lock.unlock()
+        all.forEach { $0.resume(with: result) }
+    }
+}
+
 @MainActor
 final class SourceSwitchTests: XCTestCase {
-    func snap(_ used: Double, resetsIn: TimeInterval) -> UsageSnapshot {
-        var s = UsageSnapshot.empty(source: .oauth)
-        s.session = LimitWindow(utilization: used, resetsAt: Date().addingTimeInterval(resetsIn))
+    func snap(_ used: Double, source: UsageSource) -> UsageSnapshot {
+        var s = UsageSnapshot.empty(source: source)
+        s.session = LimitWindow(utilization: used, resetsAt: Date().addingTimeInterval(3600))
         s.week = LimitWindow(utilization: 30, resetsAt: Date().addingTimeInterval(3 * 86400))
         return s
     }
 
-    func testNumbersStayOnScreenWhileTheNewSourceConnects() async throws {
+    func makeApp(next: GatedProvider) async -> (AppState, Settings) {
         let settings = Settings(defaults: scratchDefaults())
-        let first = StubProvider(kind: .statusLine, [.success(snap(40, resetsIn: 3600))])
-        let app = AppState(settings: settings, autoPoll: false, provider: first)
+        let first = StubProvider(kind: .statusLine, [.success(snap(40, source: .statusLine))])
+        let app = AppState(settings: settings, autoPoll: false, provider: first, providerFactory: { _ in next })
         await app.refresh()
-        XCTAssertNotNil(app.snapshot)
+        return (app, settings)
+    }
+
+    func testNumbersStayOnScreenWhileTheNewSourceConnects() async {
+        let next = GatedProvider(kind: .oauth)
+        let (app, settings) = await makeApp(next: next)
         settings.source = .oauth
-        try await Task.sleep(nanoseconds: 500_000_000)       // past the switch debounce
-        XCTAssertNotNil(app.snapshot, "the old numbers stay until the new source answers")
+        await waitUntil("the new source to be asked") { next.isWaiting }
+        XCTAssertEqual(app.snapshot?.session?.utilization, 40, "the old numbers stay until the new source answers")
         XCTAssertNotEqual(app.status, .connecting)
+
+        next.answer(.success(snap(55, source: .oauth)))
+        await waitUntil("the new numbers") { app.snapshot?.session?.utilization == 55 }
+        XCTAssertEqual(app.status, .live)
+    }
+
+    func testOldNumbersAreClearedIfTheNewSourceFails() async {
+        let next = GatedProvider(kind: .oauth)
+        let (app, settings) = await makeApp(next: next)
+        settings.source = .oauth
+        await waitUntil("the new source to be asked") { next.isWaiting }
+        next.answer(.failure(ProviderError.notSignedIn))
+        await waitUntil("the failure to show") { app.status.isFailure }
+        XCTAssertNil(app.snapshot, "numbers from the old source must not pose as the new source's")
     }
 }
 

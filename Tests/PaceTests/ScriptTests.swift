@@ -34,6 +34,7 @@ final class ScriptTests: XCTestCase {
         return (String(decoding: out, as: UTF8.self), p.terminationStatus)
     }
 
+    @discardableResult
     func run(_ text: String) throws -> (out: String, code: Int32) { try run(Data(text.utf8)) }
 
     func saved() throws -> [String: Any] {

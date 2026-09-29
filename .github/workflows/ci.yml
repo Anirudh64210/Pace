@@ -20,6 +20,14 @@ jobs:
       - name: Build
         run: swift build
       - name: Test
-        run: swift test
+        run: |
+          set -o pipefail
+          swift test 2>&1 | tee test.log
+      - name: Show failed tests
+        if: failure()
+        run: |
+          if [ -f test.log ]; then
+            grep -E "error: -\[|error: .*XCT|: error:" test.log | head -20 | while IFS= read -r line; do echo "::error::$line"; done
+          fi
       - name: Bundle
         run: make app

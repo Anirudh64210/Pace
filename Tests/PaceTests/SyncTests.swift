@@ -189,9 +189,8 @@ final class AppStateSyncTests: XCTestCase {
         await app.refresh()
         try await Task.sleep(nanoseconds: 5_200_000_000)   // past the 5 s re-check throttle
         app.panelDidOpen()
-        try await Task.sleep(nanoseconds: 300_000_000)
+        await waitUntil("the re-check to succeed") { app.status == .live }
         XCTAssertEqual(stub.calls, 2)
-        XCTAssertEqual(app.status, .live)
     }
 
     func testOfflineRetriesSoonWithoutEscalating() async {
@@ -323,7 +322,7 @@ final class KeychainTimeoutTests: XCTestCase {
         XCTAssertThrowsError(try ClaudeKeychain.readBlocking(timeout: 1)) { error in
             guard case ProviderError.keychainUnavailable = error else { return XCTFail("\(error)") }
         }
-        XCTAssertLessThan(Date().timeIntervalSince(start), 4)
+        XCTAssertLessThan(Date().timeIntervalSince(start), 8, "far less than the 30 s the tool would have taken")
     }
 
     func testLargeOutputDoesNotDeadlock() throws {

@@ -15,3 +15,17 @@ extension XCTestCase {
         return defaults
     }
 }
+
+extension XCTestCase {
+    /// Waits until `condition` is true, checking every 20 ms. Timing on shared CI
+    /// runners varies a lot, so tests wait for an outcome instead of a fixed delay.
+    @MainActor
+    func waitUntil(timeout: TimeInterval = 5, _ what: String = "condition",
+                   file: StaticString = #filePath, line: UInt = #line, _ condition: () -> Bool) async {
+        let end = Date().addingTimeInterval(timeout)
+        while !condition() {
+            if Date() > end { XCTFail("timed out waiting for \(what)", file: file, line: line); return }
+            try? await Task.sleep(nanoseconds: 20_000_000)
+        }
+    }
+}
